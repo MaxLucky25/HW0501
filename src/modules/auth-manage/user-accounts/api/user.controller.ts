@@ -36,7 +36,7 @@ import { DeleteUserCommand } from '../application/usecase/delete-user.usecase';
 @ApiTags('users')
 @ApiBasicAuth()
 @UseGuards(BasicAuthGuard)
-@Controller('users')
+@Controller('sa/users')
 export class UsersController {
   constructor(
     private queryBus: QueryBus,
