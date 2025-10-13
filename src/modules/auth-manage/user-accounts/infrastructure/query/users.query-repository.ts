@@ -48,13 +48,17 @@ export class UsersQueryRepository {
     const queryParams: any[] = [];
     let paramIndex = 1;
 
-    if (searchLoginTerm) {
+    // Если есть оба поисковых термина, используем OR
+    if (searchLoginTerm && searchEmailTerm) {
+      whereConditions += ` AND (login ILIKE $${paramIndex} OR email ILIKE $${paramIndex + 1})`;
+      queryParams.push(`%${searchLoginTerm}%`);
+      queryParams.push(`%${searchEmailTerm}%`);
+      paramIndex += 2;
+    } else if (searchLoginTerm) {
       whereConditions += ` AND login ILIKE $${paramIndex}`;
       queryParams.push(`%${searchLoginTerm}%`);
       paramIndex++;
-    }
-
-    if (searchEmailTerm) {
+    } else if (searchEmailTerm) {
       whereConditions += ` AND email ILIKE $${paramIndex}`;
       queryParams.push(`%${searchEmailTerm}%`);
       paramIndex++;
