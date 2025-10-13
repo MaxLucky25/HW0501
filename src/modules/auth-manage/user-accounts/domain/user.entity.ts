@@ -30,8 +30,6 @@ export class User {
     user.passwordHash = dto.passwordHash;
     user.login = dto.login;
     user.isEmailConfirmed = false;
-    user.createdAt = new Date();
-    user.updatedAt = new Date();
     user.deletedAt = null;
 
     return user;
@@ -42,7 +40,6 @@ export class User {
       this.isEmailConfirmed = false;
     }
     this.email = dto.email;
-    this.updatedAt = new Date();
   }
 
   resetEmailConfirmation(expirationMinutes: number) {
@@ -61,5 +58,5 @@ export class User {
     };
   }
 }
-// Убираем Mongoose типы - работаем с raw SQL
-export type UserDocument = User; // Теперь просто User
+
+export type UserDocument = User;

@@ -96,7 +96,7 @@ export class UsersRepository {
         id, login, password_hash, email, is_email_confirmed,
         email_confirmation, password_recovery, created_at, updated_at, deleted_at
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10
+        $1, $2, $3, $4, $5, $6, $7, NOW(), NOW(), $8
       )
       RETURNING *
     `;
@@ -108,8 +108,6 @@ export class UsersRepository {
       user.isEmailConfirmed,
       user.emailConfirmation,
       user.passwordRecovery,
-      user.createdAt,
-      user.updatedAt,
       user.deletedAt,
     ]);
     return this.mapToUser(result.rows[0]);

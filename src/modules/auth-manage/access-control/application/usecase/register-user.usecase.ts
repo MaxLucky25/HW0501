@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateUserInputDto } from '../../../user-accounts/api/input-dto/users.input-dto';
 import { UserFactory } from '../../../user-accounts/application/user.factory';
-import { AuthService } from '../auth.service';
 import { UsersRepository } from '../../../user-accounts/infrastructure/user.repository';
 import { DomainException } from '../../../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../../../core/exceptions/domain-exception-codes';
@@ -17,7 +16,6 @@ export class RegistrationUserUseCase
 {
   constructor(
     private userFactory: UserFactory,
-    private authService: AuthService,
     private usersRepository: UsersRepository,
     private emailService: EmailService,
   ) {}
@@ -39,7 +37,7 @@ export class RegistrationUserUseCase
       createdUser.emailConfirmation,
     );
 
-    this.emailService
+    await this.emailService
       .sendConfirmationEmail(
         createdUser.email,
         createdUser.emailConfirmation.confirmationCode,
