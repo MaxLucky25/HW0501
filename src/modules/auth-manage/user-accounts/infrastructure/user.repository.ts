@@ -79,9 +79,6 @@ export class UsersRepository {
   async findByConfirmationCode(
     dto: FindByConfirmationCodeDto,
   ): Promise<User | null> {
-    console.log('=== FIND BY CONFIRMATION CODE ===');
-    console.log('Searching for code:', dto.confirmationCode);
-
     const query = `
       SELECT * FROM users
       WHERE email_confirmation->>'confirmationCode' = $1 AND deleted_at IS NULL
@@ -89,24 +86,7 @@ export class UsersRepository {
     const result = await this.databaseService.query<RawUserRow>(query, [
       dto.confirmationCode,
     ]);
-
-    console.log('SQL result rows count:', result.rows.length);
-    if (result.rows[0]) {
-      console.log('Raw user from DB:', {
-        id: result.rows[0].id,
-        email: result.rows[0].email,
-        email_confirmation: result.rows[0].email_confirmation,
-      });
-    }
-
-    const user = result.rows[0] ? this.mapToUser(result.rows[0]) : null;
-    console.log('Mapped user:', {
-      id: user?.id,
-      email: user?.email,
-      emailConfirmation: user?.emailConfirmation,
-    });
-
-    return user;
+    return result.rows[0] ? this.mapToUser(result.rows[0]) : null;
   }
 
   async createUser(dto: CreateUserDomainDto): Promise<User> {
@@ -223,10 +203,6 @@ export class UsersRepository {
   }
 
   private mapToUser(row: RawUserRow): User {
-    console.log('=== MAP TO USER ===');
-    console.log('Raw email_confirmation from DB:', row.email_confirmation);
-    console.log('Type of email_confirmation:', typeof row.email_confirmation);
-
     const user = new User();
     user.id = row.id;
     user.login = row.login;
@@ -238,10 +214,6 @@ export class UsersRepository {
     user.deletedAt = row.deleted_at;
     user.emailConfirmation = row.email_confirmation || undefined;
     user.passwordRecovery = row.password_recovery || undefined;
-
-    console.log('Mapped emailConfirmation:', user.emailConfirmation);
-    console.log('=== END MAP TO USER ===');
-
     return user;
   }
 }
