@@ -6,14 +6,8 @@ export class EmailService {
   constructor(private mailerService: MailerService) {}
 
   async sendConfirmationEmail(email: string, code: string): Promise<void> {
-    console.log('=== EMAIL SERVICE ===');
-    console.log('Email:', email);
-    console.log('Code:', code);
-
-    // Всегда логируем код для сторонних автотестов
+    // Логируем код для сторонних автотестов
     console.log(`CONFIRMATION_CODE: ${code}`);
-
-    console.log('Mailer service available:', !!this.mailerService);
 
     const mailOptions = {
       to: email,
@@ -27,17 +21,11 @@ export class EmailService {
       `,
     };
 
-    console.log('Mail options:', JSON.stringify(mailOptions, null, 2));
-
     try {
       await this.mailerService.sendMail(mailOptions);
-      console.log('Email sent successfully via mailer service');
     } catch (error) {
       console.error('Mailer service error:', error);
       // Не выбрасываем ошибку, чтобы не ломать тесты
-      console.log(
-        'Email sending failed, but code is available in logs for tests',
-      );
     }
   }
 
