@@ -21,9 +21,15 @@ export class RegistrationUserUseCase
   ) {}
 
   async execute(command: RegistrationUserCommand): Promise<void> {
+    console.log('=== REGISTRATION FLOW START ===');
+    console.log('Input DTO:', command.dto);
+
     const createdUser = await this.userFactory.create(command.dto);
+    console.log('Created user ID:', createdUser.id);
+    console.log('User emailConfirmation:', createdUser.emailConfirmation);
 
     if (!createdUser.emailConfirmation) {
+      console.log('ERROR: emailConfirmation is null/undefined');
       throw new DomainException({
         code: DomainExceptionCode.EmailNotConfirmed,
         message: 'emailConfirmation is not set',
@@ -31,20 +37,34 @@ export class RegistrationUserUseCase
       });
     }
 
+    console.log(
+      'Confirmation code before DB update:',
+      createdUser.emailConfirmation.confirmationCode,
+    );
+
     // Обновляем пользователя с confirmation кодом
     await this.usersRepository.updateUserConfirmation(
       createdUser.id,
       createdUser.emailConfirmation,
     );
+    console.log('User confirmation updated in DB');
 
-    await this.emailService
+    console.log(
+      'Sending email with code:',
+      createdUser.emailConfirmation.confirmationCode,
+    );
+    this.emailService
       .sendConfirmationEmail(
         createdUser.email,
         createdUser.emailConfirmation.confirmationCode,
       )
-      .catch(() => {
-        // Логирование для удобства тестирования
-        console.error('Email sending failed');
+      .then(() => {
+        console.log('Email sent successfully');
+      })
+      .catch((error) => {
+        console.error('Email sending failed:', error);
       });
+
+    console.log('=== REGISTRATION FLOW END ===');
   }
 }

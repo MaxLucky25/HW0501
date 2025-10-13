@@ -171,6 +171,10 @@ export class UsersRepository {
     id: string,
     emailConfirmation: any,
   ): Promise<User> {
+    console.log('=== UPDATE USER CONFIRMATION ===');
+    console.log('User ID:', id);
+    console.log('EmailConfirmation to save:', emailConfirmation);
+
     const query = `
       UPDATE users 
       SET email_confirmation = $2, updated_at = NOW()
@@ -181,7 +185,15 @@ export class UsersRepository {
       id,
       emailConfirmation,
     ]);
-    return this.mapToUser(result.rows[0]);
+
+    const updatedUser = this.mapToUser(result.rows[0]);
+    console.log('Updated user from DB:', {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      emailConfirmation: updatedUser.emailConfirmation,
+    });
+
+    return updatedUser;
   }
 
   async updateUserEmailConfirmed(

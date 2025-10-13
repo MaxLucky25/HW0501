@@ -47,12 +47,23 @@ export class UserFactory {
       passwordHash,
     };
 
+    console.log('=== USER FACTORY ===');
+    console.log('Creating user with DTO:', user);
+
     const createdUser = await this.usersRepository.createUser(user);
+    console.log('User created in DB, ID:', createdUser.id);
+    console.log('User before emailConfirmation:', {
+      id: createdUser.id,
+      email: createdUser.email,
+      emailConfirmation: createdUser.emailConfirmation,
+    });
 
     // Для регистрации создаем emailConfirmation
     const expirationMinutes = this.configService.get<number>(
       'EMAIL_CONFIRMATION_EXPIRATION',
     );
+    console.log('Expiration minutes from config:', expirationMinutes);
+
     if (!expirationMinutes) {
       throw new DomainException({
         code: DomainExceptionCode.InternalServerError,
@@ -60,7 +71,13 @@ export class UserFactory {
         field: 'ConfigValue',
       });
     }
+
     createdUser.resetEmailConfirmation(expirationMinutes);
+    console.log('User after resetEmailConfirmation:', {
+      id: createdUser.id,
+      email: createdUser.email,
+      emailConfirmation: createdUser.emailConfirmation,
+    });
 
     return createdUser;
   }
