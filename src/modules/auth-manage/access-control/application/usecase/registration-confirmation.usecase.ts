@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RegistrationConfirmationInputDto } from '../../api/input-dto/registration-confirmation.input.dto';
 import { UsersRepository } from '../../../user-accounts/infrastructure/user.repository';
+import { EmailConfirmationRepository } from '../../../user-accounts/infrastructure/email-confirmation.repository';
 import { DomainException } from '../../../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../../../core/exceptions/domain-exception-codes';
 
@@ -12,24 +13,19 @@ export class RegistrationConfirmationCommand {
 export class RegistrationConfirmationUserUseCase
   implements ICommandHandler<RegistrationConfirmationCommand, void>
 {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(
+    private usersRepository: UsersRepository,
+    private emailConfirmationRepository: EmailConfirmationRepository,
+  ) {}
 
   async execute(command: RegistrationConfirmationCommand): Promise<void> {
-    const user = await this.usersRepository.findByConfirmationCode({
-      confirmationCode: command.dto.code,
-    });
-
-    // Проверяем, что пользователь и emailConfirmation существуют
-    if (!user?.emailConfirmation) {
-      throw new DomainException({
-        code: DomainExceptionCode.ConfirmationCodeInvalid,
-        message: 'Confirmation code is not valid',
-        field: 'code',
+    const emailConfirmation =
+      await this.emailConfirmationRepository.findByConfirmationCode({
+        confirmationCode: command.dto.code,
       });
-    }
 
-    // Проверяем, что пользователь уже подтвержден
-    if (user.isEmailConfirmed) {
+    // Проверяем, что emailConfirmation существует
+    if (!emailConfirmation) {
       throw new DomainException({
         code: DomainExceptionCode.ConfirmationCodeInvalid,
         message: 'Confirmation code is not valid',
@@ -38,7 +34,7 @@ export class RegistrationConfirmationUserUseCase
     }
 
     // Проверяем, что код уже подтвержден
-    if (user.emailConfirmation.isConfirmed) {
+    if (emailConfirmation.is_confirmed) {
       throw new DomainException({
         code: DomainExceptionCode.ConfirmationCodeInvalid,
         message: 'Confirmation code is not valid',
@@ -47,7 +43,7 @@ export class RegistrationConfirmationUserUseCase
     }
 
     // Проверяем, что код не истек
-    if (user.emailConfirmation.expirationDate <= new Date()) {
+    if (emailConfirmation.expiration_date <= new Date()) {
       throw new DomainException({
         code: DomainExceptionCode.ConfirmationCodeInvalid,
         message: 'Confirmation code is not valid',
@@ -55,8 +51,35 @@ export class RegistrationConfirmationUserUseCase
       });
     }
 
-    // Обновляем статус подтверждения
+    // Получаем пользователя для проверки статуса
+    const user = await this.usersRepository.findById({
+      id: emailConfirmation.user_id,
+    });
+    if (!user) {
+      throw new DomainException({
+        code: DomainExceptionCode.ConfirmationCodeInvalid,
+        message: 'Confirmation code is not valid',
+        field: 'code',
+      });
+    }
+
+    // Проверяем, что пользователь уже подтвержден
+    if (user.is_email_confirmed) {
+      throw new DomainException({
+        code: DomainExceptionCode.ConfirmationCodeInvalid,
+        message: 'Confirmation code is not valid',
+        field: 'code',
+      });
+    }
+
+    // Обновляем статус подтверждения пользователя
     await this.usersRepository.updateUserEmailConfirmed(user.id, true);
+
+    // Подтверждаем код
+    await this.emailConfirmationRepository.confirmEmailConfirmation({
+      userId: user.id,
+    });
+
     return;
   }
 }

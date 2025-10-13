@@ -31,8 +31,6 @@ export interface RawUserRow {
   created_at: Date;
   updated_at: Date;
   deleted_at: Date | null;
-  email_confirmation: EmailConfirmationData | null;
-  password_recovery: PasswordRecoveryData | null;
 }
 
 export interface RawSessionRow {
@@ -46,4 +44,22 @@ export interface RawSessionRow {
   last_active_date: Date;
   expires_at: Date;
   is_revoked: boolean;
+}
+
+export interface RawEmailConfirmationRow {
+  user_id: string;
+  confirmation_code: string;
+  expiration_date: Date;
+  is_confirmed: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface RawPasswordRecoveryRow {
+  user_id: string;
+  recovery_code: string;
+  expiration_date: Date;
+  is_confirmed: boolean;
+  created_at: Date;
+  updated_at: Date;
 }

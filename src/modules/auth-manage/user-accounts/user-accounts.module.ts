@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { UsersController } from './api/user.controller';
 import { UsersQueryRepository } from './infrastructure/query/users.query-repository';
 import { UsersRepository } from './infrastructure/user.repository';
+import { EmailConfirmationRepository } from './infrastructure/email-confirmation.repository';
+import { PasswordRecoveryRepository } from './infrastructure/password-recovery.repository';
 import { HelpingApplicationModule } from '../access-control/application/helping-application/helping-application.module';
-import { UserFactory } from './application/user.factory';
 import { CqrsModule } from '@nestjs/cqrs';
 import { GetAllUsersQueryUseCase } from './application/query-usecase/get-all-users.usecase';
 import { GetUserByIdUseCase } from './application/query-usecase/get-user-by-id.usecase';
@@ -26,8 +27,13 @@ const CommandHandler = [
     ...QueryHandler,
     UsersQueryRepository,
     UsersRepository,
-    UserFactory,
+    EmailConfirmationRepository,
+    PasswordRecoveryRepository,
   ],
-  exports: [UsersRepository, UserFactory],
+  exports: [
+    UsersRepository,
+    EmailConfirmationRepository,
+    PasswordRecoveryRepository,
+  ],
 })
 export class UsersAccountModule {}

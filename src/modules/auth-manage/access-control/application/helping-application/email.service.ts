@@ -6,11 +6,6 @@ export class EmailService {
   constructor(private mailerService: MailerService) {}
 
   async sendConfirmationEmail(email: string, code: string): Promise<void> {
-    // Сохраняем код в Jest State для тестов
-    if (typeof expect !== 'undefined' && expect.setState) {
-      expect.setState({ code });
-    }
-
     await this.mailerService.sendMail({
       to: email,
       subject: 'Подтверждение регистрации',

@@ -3,6 +3,9 @@ import { PasswordRecoveryInputDto } from '../../api/input-dto/password-recovery.
 import { AuthService } from '../auth.service';
 import { EmailService } from '../helping-application/email.service';
 import { UsersRepository } from '../../../user-accounts/infrastructure/user.repository';
+import { PasswordRecoveryRepository } from '../../../user-accounts/infrastructure/password-recovery.repository';
+import { add } from 'date-fns';
+import { randomUUID } from 'crypto';
 
 export class PasswordRecoveryCommand {
   constructor(public readonly dto: PasswordRecoveryInputDto) {}
@@ -14,6 +17,7 @@ export class PasswordRecoveryUseCase
 {
   constructor(
     private usersRepository: UsersRepository,
+    private passwordRecoveryRepository: PasswordRecoveryRepository,
     private authService: AuthService,
     private emailService: EmailService,
   ) {}
@@ -26,17 +30,20 @@ export class PasswordRecoveryUseCase
       const expiration = this.authService.getExpiration(
         'PASSWORD_RECOVERY_EXPIRATION',
       );
-      user.resetPasswordRecovery(expiration);
 
-      // Обновляем пользователя с новым recovery кодом
-      await this.usersRepository.updateUserRecovery(
-        user.id,
-        user.passwordRecovery!,
-      );
+      const recoveryCode = randomUUID();
+      const expirationDate = add(new Date(), { minutes: expiration });
+
+      // Создаем или обновляем recovery код
+      await this.passwordRecoveryRepository.updatePasswordRecovery({
+        userId: user.id,
+        recoveryCode,
+        expirationDate,
+      });
 
       // Отправляем email с обработкой ошибок
       await this.emailService
-        .sendRecoveryEmail(user.email, user.passwordRecovery!.recoveryCode)
+        .sendRecoveryEmail(user.email, recoveryCode)
         .catch(() => {
           // Не выбрасываем исключение, просто игнорируем ошибку
         });
