@@ -25,11 +25,6 @@ export class RegistrationUserUseCase
   async execute(command: RegistrationUserCommand): Promise<void> {
     const createdUser = await this.userFactory.create(command.dto);
 
-    const expiration = this.authService.getExpiration(
-      'EMAIL_CONFIRMATION_EXPIRATION',
-    );
-    createdUser.resetEmailConfirmation(expiration);
-
     if (!createdUser.emailConfirmation) {
       throw new DomainException({
         code: DomainExceptionCode.EmailNotConfirmed,

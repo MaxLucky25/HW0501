@@ -7,12 +7,14 @@ import { BcryptService } from '../../access-control/application/helping-applicat
 import { DomainException } from '../../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../../core/exceptions/domain-exception-codes';
 import { Extension } from '../../../../core/exceptions/domain-exceptions';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserFactory {
   constructor(
     private readonly bcryptService: BcryptService,
     private readonly usersRepository: UsersRepository,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(dto: CreateUserInputDto): Promise<User> {
@@ -45,6 +47,21 @@ export class UserFactory {
       passwordHash,
     };
 
-    return this.usersRepository.createUser(user);
+    const createdUser = await this.usersRepository.createUser(user);
+
+    // Для регистрации создаем emailConfirmation
+    const expirationMinutes = this.configService.get<number>(
+      'EMAIL_CONFIRMATION_EXPIRATION',
+    );
+    if (!expirationMinutes) {
+      throw new DomainException({
+        code: DomainExceptionCode.InternalServerError,
+        message: 'EMAIL_CONFIRMATION_EXPIRATION is not set',
+        field: 'ConfigValue',
+      });
+    }
+    createdUser.resetEmailConfirmation(expirationMinutes);
+
+    return createdUser;
   }
 }
