@@ -6,17 +6,29 @@ export class EmailService {
   constructor(private mailerService: MailerService) {}
 
   async sendConfirmationEmail(email: string, code: string): Promise<void> {
-    await this.mailerService.sendMail({
-      to: email,
-      subject: 'Подтверждение регистрации',
-      text: `Подтвердите регистрацию по ссылке: https://somesite.com/confirm-email?code=${code}`,
-      html: `
-        <h1>Thanks for your registration</h1>
-        <p>To finish registration please follow the link below:
-            <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
-        </p>
-      `,
-    });
+    console.log(
+      'EmailService: sendConfirmationEmail called with email:',
+      email,
+      'code:',
+      code,
+    );
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'Подтверждение регистрации',
+        text: `Подтвердите регистрацию по ссылке: https://somesite.com/confirm-email?code=${code}`,
+        html: `
+          <h1>Thanks for your registration</h1>
+          <p>To finish registration please follow the link below:
+              <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
+          </p>
+        `,
+      });
+      console.log('EmailService: Email sent successfully');
+    } catch (error) {
+      console.error('EmailService: Error sending email:', error);
+      throw error;
+    }
   }
 
   async sendRecoveryEmail(email: string, recoveryCode: string): Promise<void> {

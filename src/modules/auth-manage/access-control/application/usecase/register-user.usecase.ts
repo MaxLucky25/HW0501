@@ -90,11 +90,19 @@ export class RegistrationUserUseCase
     });
 
     // Отправляем email
+    console.log(
+      'Sending confirmation email to:',
+      user.email,
+      'with code:',
+      confirmationCode,
+    );
     this.emailService
       .sendConfirmationEmail(user.email, confirmationCode)
-      .catch(() => {
-        // Логирование для удобства тестирования
-        console.error('Email sending failed');
+      .then(() => {
+        console.log('Email sent successfully');
+      })
+      .catch((error) => {
+        console.error('Email sending failed:', error);
       });
   }
 }
