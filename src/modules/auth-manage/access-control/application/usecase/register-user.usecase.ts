@@ -96,7 +96,7 @@ export class RegistrationUserUseCase
       'with code:',
       confirmationCode,
     );
-    this.emailService
+    await this.emailService
       .sendConfirmationEmail(user.email, confirmationCode)
       .then(() => {
         console.log('Email sent successfully');
