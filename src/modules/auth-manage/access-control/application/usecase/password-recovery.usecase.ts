@@ -41,15 +41,8 @@ export class PasswordRecoveryUseCase
         expirationDate,
       });
 
-      // Отправляем email с retry логикой
-      await this.emailService
-        .sendRecoveryEmail(user.email, recoveryCode)
-        .catch((error) => {
-          console.error(
-            'Password recovery email failed after all retries:',
-            error,
-          );
-        });
+      // Отправляем email
+      await this.emailService.sendRecoveryEmail(user.email, recoveryCode);
     }
     return;
   }

@@ -51,12 +51,8 @@ export class RegistrationEmailResendingUseCase
       expirationDate,
     });
 
-    // Отправляем email с retry логикой
-    await this.emailService
-      .sendConfirmationEmail(user.email, confirmationCode)
-      .catch((error) => {
-        console.error('Email resending failed after all retries:', error);
-      });
+    // Отправляем email
+    await this.emailService.sendConfirmationEmail(user.email, confirmationCode);
 
     return;
   }

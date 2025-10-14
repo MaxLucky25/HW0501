@@ -89,11 +89,7 @@ export class RegistrationUserUseCase
       isConfirmed: false,
     });
 
-    // Отправляем email с retry логикой
-    await this.emailService
-      .sendConfirmationEmail(user.email, confirmationCode)
-      .catch((error) => {
-        console.error('Email sending failed after all retries:', error);
-      });
+    // Отправляем email
+    await this.emailService.sendConfirmationEmail(user.email, confirmationCode);
   }
 }
