@@ -89,11 +89,11 @@ export class RegistrationUserUseCase
       isConfirmed: false,
     });
 
-    // Отправляем email
-    this.emailService
+    // Отправляем email с retry логикой
+    await this.emailService
       .sendConfirmationEmail(user.email, confirmationCode)
       .catch((error) => {
-        console.error('Email sending failed:', error);
+        console.error('Email sending failed after all retries:', error);
       });
   }
 }
