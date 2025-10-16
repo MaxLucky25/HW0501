@@ -1,35 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import sgMail from '@sendgrid/mail';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class EmailService {
-  constructor(private configService: ConfigService) {
-    // Инициализируем SendGrid с API ключом (используем старые переменные)
-    sgMail.setApiKey(this.configService.getOrThrow<string>('EMAIL_PASS'));
-  }
+  constructor(private mailerService: MailerService) {}
 
   async sendConfirmationEmail(email: string, code: string): Promise<void> {
-    const msg = {
-      to: email,
-      from: this.configService.getOrThrow<string>('EMAIL_USER'),
-      subject: 'Подтверждение регистрации',
-      text: `Подтвердите регистрацию по ссылке: https://somesite.com/confirm-email?code=${code}`,
-      html: `
-        <h1>Thank for your registration</h1>
-        <p>To finish registration please follow the link below:
-            <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
-        </p>
-      `,
-    };
-
-    await sgMail.send(msg);
+    try {
+      console.log(`[EMAIL] Sending confirmation to: ${email}, code: ${code}`);
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'Подтверждение регистрации',
+        text: `Подтвердите регистрацию по ссылке: https://somesite.com/confirm-email?code=${code}`,
+        html: `
+          <h1>Thank for your registration</h1>
+          <p>To finish registration please follow the link below:
+              <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
+          </p>
+        `,
+      });
+      console.log(`[EMAIL] Confirmation sent successfully to: ${email}`);
+    } catch (error) {
+      console.error(`[EMAIL] Failed to send confirmation to ${email}:`);
+      console.error(`[EMAIL] Error type: ${error.constructor.name}`);
+      console.error(`[EMAIL] Error message: ${error.message}`);
+      if (error.response) {
+        console.error(
+          `[EMAIL] SMTP response: ${JSON.stringify(error.response)}`,
+        );
+      }
+      throw error;
+    }
   }
 
   async sendRecoveryEmail(email: string, recoveryCode: string): Promise<void> {
-    const msg = {
+    await this.mailerService.sendMail({
       to: email,
-      from: this.configService.getOrThrow<string>('EMAIL_USER'),
       subject: 'Восстановление пароля',
       text: `Восстановите пароль по ссылке: https://somesite.com/recover?code=${recoveryCode}`,
       html: `
@@ -38,8 +44,6 @@ export class EmailService {
             <a href='https://somesite.com/recover?code=${recoveryCode}'>reset password</a>
         </p>
       `,
-    };
-
-    await sgMail.send(msg);
+    });
   }
 }

@@ -90,6 +90,21 @@ export class RegistrationUserUseCase
     });
 
     // Отправляем email
-    await this.emailService.sendConfirmationEmail(user.email, confirmationCode);
+    console.log(`[REGISTRATION] Attempting to send email to: ${user.email}`);
+    try {
+      await this.emailService.sendConfirmationEmail(
+        user.email,
+        confirmationCode,
+      );
+      console.log(`[REGISTRATION] Email sent successfully to: ${user.email}`);
+    } catch (error) {
+      console.error(`[REGISTRATION] Failed to send email to ${user.email}:`);
+      console.error(`[REGISTRATION] Error type: ${error.constructor.name}`);
+      console.error(`[REGISTRATION] Error message: ${error.message}`);
+      console.error(
+        `[REGISTRATION] User created but email failed - ID: ${user.id}`,
+      );
+      throw error;
+    }
   }
 }
