@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NewPasswordInputDto } from '../../api/input-dto/new-password.input.dto';
-import { AuthService } from '../auth.service';
 import { BcryptService } from '../helping-application/bcrypt.service';
 import { UsersRepository } from '../../../user-accounts/infrastructure/user.repository';
 import { PasswordRecoveryRepository } from '../../../user-accounts/infrastructure/password-recovery.repository';
@@ -16,7 +15,6 @@ export class NewPasswordUseCase
   implements ICommandHandler<NewPasswordCommand, void>
 {
   constructor(
-    private authService: AuthService,
     private usersRepository: UsersRepository,
     private passwordRecoveryRepository: PasswordRecoveryRepository,
     private bcryptService: BcryptService,

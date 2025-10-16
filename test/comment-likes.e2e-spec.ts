@@ -75,7 +75,7 @@ describe('Comment Likes (e2e)', () => {
       };
 
       const userResponse = await request(server)
-        .post('/users')
+        .post('/sa/users')
         .set('Authorization', `Basic ${adminCredentials}`)
         .send(userData)
         .expect(201);

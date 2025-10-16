@@ -1,4 +1,5 @@
 import { OmitType } from '@nestjs/swagger';
+import { RawUserRow } from '../../../../../core/database/types/sql.types';
 
 export class UserViewDto {
   id: string;
@@ -6,7 +7,7 @@ export class UserViewDto {
   email: string;
   createdAt: string;
 
-  static mapToView(user: any): UserViewDto {
+  static mapToView(user: RawUserRow): UserViewDto {
     return {
       id: user.id,
       email: user.email,
@@ -24,7 +25,7 @@ export class MeViewDto extends OmitType(UserViewDto, [
 ] as const) {
   userId: string;
 
-  static mapToView(user: any): MeViewDto {
+  static mapToView(user: RawUserRow): MeViewDto {
     const dto = new MeViewDto();
 
     dto.email = user.email;

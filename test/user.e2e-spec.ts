@@ -33,7 +33,7 @@ describe('UserController (e2e)', () => {
     };
 
     const response = await request(server)
-      .post('/users')
+      .post('/sa/users')
       .set('Authorization', basicAuth)
       .send(userData)
       .expect(201);
@@ -56,7 +56,7 @@ describe('UserController (e2e)', () => {
     }
 
     const response = await request(server)
-      .get(`/users/${createdUserId}`)
+      .get(`/sa/users/${createdUserId}`)
       .set('Authorization', basicAuth)
       .expect(200);
 
@@ -68,7 +68,7 @@ describe('UserController (e2e)', () => {
 
   it('should get all users (GET)', async () => {
     const response = await request(server)
-      .get('/users')
+      .get('/sa/users')
       .set('Authorization', basicAuth)
       .query({
         pageNumber: 1,
@@ -93,18 +93,19 @@ describe('UserController (e2e)', () => {
     }
 
     const updatedData: UpdateUserInputDto = {
+      login: 'testuser',
       email: 'updated@example.com',
     };
 
     await request(server)
-      .put(`/users/${createdUserId}`)
+      .put(`/sa/users/${createdUserId}`)
       .set('Authorization', basicAuth)
       .send(updatedData)
       .expect(204);
 
     // Проверяем, что данные обновились
     const response = await request(server)
-      .get(`/users/${createdUserId}`)
+      .get(`/sa/users/${createdUserId}`)
       .set('Authorization', basicAuth)
       .expect(200);
 
@@ -118,13 +119,13 @@ describe('UserController (e2e)', () => {
     }
 
     await request(server)
-      .delete(`/users/${createdUserId}`)
+      .delete(`/sa/users/${createdUserId}`)
       .set('Authorization', basicAuth)
       .expect(204);
 
     // Проверяем, что пользователь удалён
     await request(server)
-      .get(`/users/${createdUserId}`)
+      .get(`/sa/users/${createdUserId}`)
       .set('Authorization', basicAuth)
       .expect(404);
   });
@@ -192,7 +193,7 @@ describe('UserController (e2e)', () => {
 
     for (const testCase of testCases) {
       await request(server)
-        .post('/users')
+        .post('/sa/users')
         .set('Authorization', basicAuth)
         .send(testCase.data)
         .expect(400);
@@ -218,7 +219,7 @@ describe('UserController (e2e)', () => {
 
     for (const testCase of testCases) {
       await request(server)
-        .put(`/users/${createdUserId}`)
+        .put(`/sa/users/${createdUserId}`)
         .set('Authorization', basicAuth)
         .send(testCase.data)
         .expect(400);
@@ -227,25 +228,28 @@ describe('UserController (e2e)', () => {
 
   // Объединенный тест для несуществующих ресурсов
   it('should return 404 for non-existent user', async () => {
-    const fakeId = '65d8a6b1d4f1a04e8a0e0000'; // Несуществующий ID
+    const fakeId = '550e8400-e29b-41d4-a716-446655440000'; // Несуществующий UUID
 
     // GET
     await request(server)
-      .get(`/users/${fakeId}`)
+      .get(`/sa/users/${fakeId}`)
       .set('Authorization', basicAuth)
       .expect(404);
 
     // PUT
-    const updateData: UpdateUserInputDto = { email: 'updated@example.com' };
+    const updateData: UpdateUserInputDto = {
+      login: 'testuser',
+      email: 'updated@example.com',
+    };
     await request(server)
-      .put(`/users/${fakeId}`)
+      .put(`/sa/users/${fakeId}`)
       .set('Authorization', basicAuth)
       .send(updateData)
       .expect(404);
 
     // DELETE
     await request(server)
-      .delete(`/users/${fakeId}`)
+      .delete(`/sa/users/${fakeId}`)
       .set('Authorization', basicAuth)
       .expect(404);
   });
@@ -259,7 +263,7 @@ describe('UserController (e2e)', () => {
     };
 
     const response = await request(server)
-      .post('/users')
+      .post('/sa/users')
       .set('Authorization', basicAuth)
       .send(minLengthData)
       .expect(201);
@@ -277,7 +281,7 @@ describe('UserController (e2e)', () => {
     };
 
     const response = await request(server)
-      .post('/users')
+      .post('/sa/users')
       .set('Authorization', basicAuth)
       .send(maxLengthData)
       .expect(201);
@@ -290,7 +294,7 @@ describe('UserController (e2e)', () => {
   // Тесты для пагинации и сортировки
   it('should handle pagination parameters (GET)', async () => {
     const response = await request(server)
-      .get('/users')
+      .get('/sa/users')
       .set('Authorization', basicAuth)
       .query({
         pageNumber: 2,
@@ -307,7 +311,7 @@ describe('UserController (e2e)', () => {
 
   it('should handle search by login (GET)', async () => {
     const response = await request(server)
-      .get('/users')
+      .get('/sa/users')
       .set('Authorization', basicAuth)
       .query({
         searchLoginTerm: 'test',
@@ -323,7 +327,7 @@ describe('UserController (e2e)', () => {
 
   it('should handle search by email (GET)', async () => {
     const response = await request(server)
-      .get('/users')
+      .get('/sa/users')
       .set('Authorization', basicAuth)
       .query({
         searchEmailTerm: 'example',
@@ -359,7 +363,7 @@ describe('UserController (e2e)', () => {
 
     for (const testCase of sortTestCases) {
       const response = await request(server)
-        .get('/users')
+        .get('/sa/users')
         .set('Authorization', basicAuth)
         .query({
           sortBy: testCase.sortBy,
@@ -397,7 +401,7 @@ describe('UserController (e2e)', () => {
 
     for (const userData of usersData) {
       await request(server)
-        .post('/users')
+        .post('/sa/users')
         .set('Authorization', basicAuth)
         .send(userData)
         .expect(201);
@@ -405,7 +409,7 @@ describe('UserController (e2e)', () => {
 
     // Проверяем пагинацию
     const response = await request(server)
-      .get('/users')
+      .get('/sa/users')
       .set('Authorization', basicAuth)
       .query({
         pageNumber: 1,

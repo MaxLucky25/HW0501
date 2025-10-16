@@ -75,12 +75,4 @@ export class EmailConfirmationRepository {
     `;
     await this.databaseService.query(query, [dto.userId]);
   }
-
-  async deleteEmailConfirmation(userId: string): Promise<void> {
-    const query = `
-      DELETE FROM email_confirmations 
-      WHERE user_id = $1
-    `;
-    await this.databaseService.query(query, [userId]);
-  }
 }

@@ -9,11 +9,3 @@ export class FindByEmailDto {
 export class FindByLoginOrEmailDto {
   loginOrEmail: string;
 }
-
-export class FindByRecoveryDto {
-  recoveryCode: string;
-}
-
-export class FindByConfirmationCodeDto {
-  confirmationCode: string;
-}

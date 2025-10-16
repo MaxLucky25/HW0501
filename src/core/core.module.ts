@@ -7,7 +7,6 @@ import { UuidValidationTransformationPipe } from './pipes/uuid-validator-transfo
 import { UuidValidationPipe } from './pipes/uuid-validator-transformation-pipe-service';
 import { DatabaseService } from './database/database.service';
 
-//глобальный модуль для провайдеров и модулей необходимых во всех частях приложения (например LoggerService, CqrsModule, etc...)
 @Global()
 @Module({
   providers: [
@@ -28,7 +27,7 @@ import { DatabaseService } from './database/database.service';
     // Pipes для валидации UUID
     UuidValidationTransformationPipe,
     UuidValidationPipe,
-    // Database service для работы с PostgreSQL
+    // Database service для работы с PostgresSQL
     DatabaseService,
   ],
   exports: [

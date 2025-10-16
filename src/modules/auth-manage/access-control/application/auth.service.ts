@@ -27,11 +27,6 @@ export class AuthService {
     return value;
   }
 
-  isCodeValid(entity: { isConfirmed: boolean; expirationDate: Date }): boolean {
-    const now = new Date();
-    return !entity.isConfirmed && entity.expirationDate > now;
-  }
-
   async validateUser(dto: LoginInputDto): Promise<UserContextDto> {
     const user = await this.usersRepository.findByLoginOrEmail({
       loginOrEmail: dto.loginOrEmail,

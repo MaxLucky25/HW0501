@@ -8,20 +8,7 @@ export interface TruncateResult {
   rowCount: number;
 }
 
-// Типы для JSON полей
-export interface EmailConfirmationData {
-  confirmationCode: string;
-  expirationDate: Date;
-  isConfirmed: boolean;
-}
-
-export interface PasswordRecoveryData {
-  recoveryCode: string;
-  expirationDate: Date;
-  isConfirmed: boolean;
-}
-
-// Типы для raw SQL данных (snake_case из PostgreSQL)
+// Типы для raw SQL данных (snake_case из PostgresSQL)
 export interface RawUserRow {
   id: string;
   login: string;

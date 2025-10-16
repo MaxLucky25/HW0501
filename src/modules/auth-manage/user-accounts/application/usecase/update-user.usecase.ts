@@ -17,7 +17,7 @@ export class UpdateUserUseCase
   constructor(private usersRepository: UsersRepository) {}
 
   async execute(command: UpdateUserCommand): Promise<void> {
-    const user = await this.usersRepository.findOrNotFoundFail({
+    await this.usersRepository.findOrNotFoundFail({
       id: command.userId.id,
     });
 

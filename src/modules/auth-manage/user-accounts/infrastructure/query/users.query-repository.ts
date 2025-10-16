@@ -6,6 +6,8 @@ import { PaginatedViewDto } from '../../../../../core/dto/base.paginated.view-dt
 import { DomainException } from '../../../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../../../core/exceptions/domain-exception-codes';
 import { FindByIdDto } from '../dto/repoDto';
+import { RawUserRow } from '../../../../../core/database/types/sql.types';
+import { UsersSortBy } from '../../api/input-dto/user-sort-by';
 
 @Injectable()
 export class UsersQueryRepository {
@@ -16,7 +18,9 @@ export class UsersQueryRepository {
       SELECT * FROM users 
       WHERE id = $1 AND deleted_at IS NULL
     `;
-    const result = await this.databaseService.query(query, [dto.id]);
+    const result = await this.databaseService.query<RawUserRow>(query, [
+      dto.id,
+    ]);
     const user = result.rows[0];
 
     if (!user) {
@@ -37,7 +41,8 @@ export class UsersQueryRepository {
     const searchEmailTerm = query.searchEmailTerm || null;
 
     // Маппинг полей для PostgreSQL
-    const orderBy = query.sortBy === 'createdAt' ? 'created_at' : query.sortBy;
+    const orderBy =
+      query.sortBy === UsersSortBy.CreatedAt ? 'created_at' : query.sortBy;
     const direction = query.sortDirection.toUpperCase();
 
     const limit = query.pageSize;
@@ -45,7 +50,7 @@ export class UsersQueryRepository {
 
     // Строим WHERE условия динамически
     let whereConditions = 'WHERE deleted_at IS NULL';
-    const queryParams: any[] = [];
+    const queryParams: (string | number)[] = [];
     let paramIndex = 1;
 
     // Если есть оба поисковых термина, используем OR
@@ -80,8 +85,8 @@ export class UsersQueryRepository {
     const usersQueryParams = [...queryParams, limit, offset];
 
     const [usersResult, countResult] = await Promise.all([
-      this.databaseService.query(usersQuery, usersQueryParams),
-      this.databaseService.query(countQuery, queryParams),
+      this.databaseService.query<RawUserRow>(usersQuery, usersQueryParams),
+      this.databaseService.query<{ count: string }>(countQuery, queryParams),
     ]);
 
     const users = usersResult.rows;

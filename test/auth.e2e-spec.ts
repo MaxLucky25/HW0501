@@ -392,7 +392,7 @@ describe('AuthController (e2e)', () => {
 
     const server = app.getHttpServer() as Server;
     const userResponse = await request(server)
-      .post('/users')
+      .post('/sa/users')
       .set('Authorization', basicAuth)
       .send(userData)
       .expect(201);

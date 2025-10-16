@@ -1,10 +1,3 @@
-export class CreatePasswordRecoveryDto {
-  userId: string;
-  recoveryCode: string;
-  expirationDate: Date;
-  isConfirmed: boolean;
-}
-
 export class FindByRecoveryCodeDto {
   recoveryCode: string;
 }

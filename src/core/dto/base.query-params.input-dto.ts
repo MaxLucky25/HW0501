@@ -16,10 +16,3 @@ export enum SortDirection {
   Asc = 'asc',
   Desc = 'desc',
 }
-
-export function sortDirectionToNumber(direction: string): 1 | -1 {
-  const normalized =
-    direction.toLowerCase() === 'asc' ? SortDirection.Asc : SortDirection.Desc;
-
-  return normalized === SortDirection.Asc ? 1 : -1;
-}

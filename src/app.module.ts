@@ -1,6 +1,5 @@
 import { configModule } from './configs/dynamic-config-module';
 import { Module } from '@nestjs/common';
-// import { ConfigService } from '@nestjs/config';
 import { TestingModule } from './modules/testing/testing.module';
 // import { ContentModule } from './modules/content-manage/content.module';
 import { AuthManageModule } from './modules/auth-manage/auth-manage.module';

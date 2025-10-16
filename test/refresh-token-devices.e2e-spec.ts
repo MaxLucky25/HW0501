@@ -57,7 +57,7 @@ describe('RefreshToken and Devices (e2e)', () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
 
-    it('should create new user (POST /users)', async () => {
+    it('should create new user (POST /sa/users)', async () => {
       const userData: CreateUserInputDto = {
         login: 'testuser',
         password: 'testpassword123',
@@ -65,7 +65,7 @@ describe('RefreshToken and Devices (e2e)', () => {
       };
 
       const response = await request(server)
-        .post('/users')
+        .post('/sa/users')
         .set('Authorization', basicAuth)
         .send(userData)
         .expect(201);
@@ -232,7 +232,7 @@ describe('RefreshToken and Devices (e2e)', () => {
       await request(server).delete('/testing/all-data').expect(204);
     });
 
-    it('should create new user (POST /users)', async () => {
+    it('should create new user (POST /sa/users)', async () => {
       const userData: CreateUserInputDto = {
         login: 'deviceuser',
         password: 'devicepassword123',
@@ -240,7 +240,7 @@ describe('RefreshToken and Devices (e2e)', () => {
       };
 
       const response = await request(server)
-        .post('/users')
+        .post('/sa/users')
         .set('Authorization', basicAuth)
         .send(userData)
         .expect(201);
@@ -251,7 +251,7 @@ describe('RefreshToken and Devices (e2e)', () => {
       expect(userResponseBody.email).toBe('device@example.com');
     });
 
-    it('should create fresh user for devices tests (POST /users)', async () => {
+    it('should create fresh user for devices tests (POST /sa/users)', async () => {
       const userData: CreateUserInputDto = {
         login: 'freshuser',
         password: 'freshpassword123',
@@ -259,7 +259,7 @@ describe('RefreshToken and Devices (e2e)', () => {
       };
 
       const response = await request(server)
-        .post('/users')
+        .post('/sa/users')
         .set('Authorization', basicAuth)
         .send(userData)
         .expect(201);
@@ -327,6 +327,8 @@ describe('RefreshToken and Devices (e2e)', () => {
     });
 
     it('should return error if device ID not found (DELETE /security/devices/:deviceId)', async () => {
+      const fakeDeviceId = '550e8400-e29b-41d4-a716-446655440000'; // Несуществующий UUID
+
       const loginData: LoginInputDto = {
         loginOrEmail: 'deviceuser',
         password: 'devicepassword123',
@@ -345,7 +347,7 @@ describe('RefreshToken and Devices (e2e)', () => {
       }
 
       await request(server)
-        .delete('/security/devices/non-existent-device-id')
+        .delete(`/security/devices/${fakeDeviceId}`)
         .set('Cookie', `refreshToken=${refreshToken}`)
         .expect(404);
     });
@@ -384,7 +386,7 @@ describe('RefreshToken and Devices (e2e)', () => {
       };
 
       await request(server)
-        .post('/users')
+        .post('/sa/users')
         .set('Authorization', basicAuth)
         .send(user1Data)
         .expect(201);
@@ -428,7 +430,7 @@ describe('RefreshToken and Devices (e2e)', () => {
       };
 
       await request(server)
-        .post('/users')
+        .post('/sa/users')
         .set('Authorization', basicAuth)
         .send(user2Data)
         .expect(201);

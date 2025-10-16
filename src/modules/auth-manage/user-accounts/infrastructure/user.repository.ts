@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../../../../core/database/database.service';
 import { DomainException } from '../../../../core/exceptions/domain-exceptions';
 import { DomainExceptionCode } from '../../../../core/exceptions/domain-exception-codes';
-import { CreateUserDomainDto } from '../domain/dto/create-user.domain.dto';
+import { CreateUserDomainDto } from '../api/input-dto/create-user.domain.dto';
 import { UpdateUserInputDto } from '../api/input-dto/update-user.input.dto';
 import {
   FindByEmailDto,
