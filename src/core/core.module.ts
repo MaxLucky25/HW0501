@@ -20,11 +20,11 @@ import { DatabaseService } from './database/database.service';
       provide: APP_FILTER,
       useClass: DomainHttpExceptionsFilter,
     },
-    // Глобальный guard для throttling (временно отключен)
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard,
-    // },
+    // Глобальный guard для throttling
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     // Pipes для валидации UUID
     UuidValidationTransformationPipe,
     UuidValidationPipe,

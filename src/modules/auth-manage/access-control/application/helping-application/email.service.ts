@@ -6,31 +6,17 @@ export class EmailService {
   constructor(private mailerService: MailerService) {}
 
   async sendConfirmationEmail(email: string, code: string): Promise<void> {
-    try {
-      console.log(`[EMAIL] Sending confirmation to: ${email}, code: ${code}`);
-      await this.mailerService.sendMail({
-        to: email,
-        subject: 'Подтверждение регистрации',
-        text: `Подтвердите регистрацию по ссылке: https://somesite.com/confirm-email?code=${code}`,
-        html: `
-          <h1>Thank for your registration</h1>
-          <p>To finish registration please follow the link below:
-              <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
-          </p>
-        `,
-      });
-      console.log(`[EMAIL] Confirmation sent successfully to: ${email}`);
-    } catch (error) {
-      console.error(`[EMAIL] Failed to send confirmation to ${email}:`);
-      console.error(`[EMAIL] Error type: ${error.constructor.name}`);
-      console.error(`[EMAIL] Error message: ${error.message}`);
-      if (error.response) {
-        console.error(
-          `[EMAIL] SMTP response: ${JSON.stringify(error.response)}`,
-        );
-      }
-      throw error;
-    }
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Подтверждение регистрации',
+      text: `Подтвердите регистрацию по ссылке: https://somesite.com/confirm-email?code=${code}`,
+      html: `
+        <h1>Thank for your registration</h1>
+        <p>To finish registration please follow the link below:
+            <a href='https://somesite.com/confirm-email?code=${code}'>complete registration</a>
+        </p>
+      `,
+    });
   }
 
   async sendRecoveryEmail(email: string, recoveryCode: string): Promise<void> {
